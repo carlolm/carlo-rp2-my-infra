@@ -1,5 +1,6 @@
 {
-    # Use DNS-01 challenge for SSL (Internal-only HTTPS)
+    # Use Cloudflare DNS-01 challenge for internal SSL
+    acme_dns cloudflare {$CLOUDFLARE_API_TOKEN}
 }
 
 (google_auth) {
@@ -19,13 +20,11 @@ infra.carlolm.com {
     reverse_proxy host.docker.internal:8080
 }
 
-# Nutrition Front-end
 nutrition.carlolm.com {
     import google_auth
     reverse_proxy host.docker.internal:3000
 }
 
-# Nutrition Back-end (API)
 api-nutrition.carlolm.com {
     import google_auth
     reverse_proxy host.docker.internal:8000

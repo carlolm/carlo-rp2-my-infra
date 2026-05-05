@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   caddy:
-    image: lucaslorentz/caddy-docker-proxy:latest # Or a custom image with Cloudflare plugin
+    image: slothcroissant/caddy-cloudflaredns:latest
     container_name: caddy
     restart: always
     ports:

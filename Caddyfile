@@ -1,7 +1,5 @@
 {
-    # Use Cloudflare for DNS-01 challenge to get HTTPS for internal sites
-    # Requires a Caddy build with the 'cloudflare' plugin
-    # email carlo@carlolm.com
+    # Use DNS-01 challenge for SSL (Internal-only HTTPS)
 }
 
 (google_auth) {
@@ -21,7 +19,14 @@ infra.carlolm.com {
     reverse_proxy host.docker.internal:8080
 }
 
+# Nutrition Front-end
 nutrition.carlolm.com {
+    import google_auth
+    reverse_proxy host.docker.internal:3000
+}
+
+# Nutrition Back-end (API)
+api-nutrition.carlolm.com {
     import google_auth
     reverse_proxy host.docker.internal:8000
 }

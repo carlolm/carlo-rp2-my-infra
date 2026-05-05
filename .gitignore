@@ -2,3 +2,4 @@
 *.log
 data/
 config/
+oauth2-proxy.cfg

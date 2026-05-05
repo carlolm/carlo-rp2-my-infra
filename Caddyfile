@@ -1,36 +1,46 @@
 {
-    # Use Cloudflare DNS-01 challenge for internal SSL
-    acme_dns cloudflare {$CLOUDFLARE_API_TOKEN}
+	acme_dns cloudflare {$CLOUDFLARE_API_TOKEN}
 }
 
-(google_auth) {
-    forward_auth oauth2-proxy:4180 {
-        uri /oauth2/auth
-        copy_headers X-Auth-Request-User X-Auth-Request-Email
-    }
+(gated) {
+	forward_auth 127.0.0.1:4180 {
+		uri /oauth2/auth
+		copy_headers X-Auth-Request-User X-Auth-Request-Email
+		@bad status 401
+		handle_response @bad {
+			redir https://auth.carlolm.com/oauth2/start?rd={scheme}://{host}{uri} 302
+		}
+	}
 }
 
-# The Login Gatekeeper
+# Gatekeeper login endpoint (must stay unauthenticated for /oauth2/*)
 auth.carlolm.com {
-    reverse_proxy oauth2-proxy:4180
+	reverse_proxy 127.0.0.1:4180
 }
 
 infra.carlolm.com {
-    import google_auth
-    reverse_proxy host.docker.internal:8080
+	import gated
+	reverse_proxy 127.0.0.1:7100
 }
 
+# Frontend + same-origin /api/* route to the API backend
 nutrition.carlolm.com {
-    import google_auth
-    reverse_proxy host.docker.internal:3000
+	import gated
+	handle /api/* {
+		reverse_proxy 127.0.0.1:7201
+	}
+	handle {
+		reverse_proxy 127.0.0.1:7200
+	}
 }
 
+# Direct API subdomain (kept for scripts/integrations)
 api-nutrition.carlolm.com {
-    import google_auth
-    reverse_proxy host.docker.internal:8000
+	import gated
+	reverse_proxy 127.0.0.1:7201
 }
 
 news.carlolm.com {
-    import google_auth
-    reverse_proxy host.docker.internal:5001
+	import gated
+	reverse_proxy 127.0.0.1:7300
 }

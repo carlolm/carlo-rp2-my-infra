@@ -36,6 +36,18 @@ services:
     volumes:
       - ./allowed_emails.txt:/config/allowed_emails.txt
 
+  # Public ingress. Token-based (remotely-managed) tunnel "rp2-apps":
+  # public-hostname routing is configured in the Cloudflare dashboard, not here.
+  # Shares internal_apps_network so it can reach the `caddy` container by name,
+  # keeping all public traffic behind the oauth2-proxy gate.
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    restart: always
+    command: tunnel --no-autoupdate run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+
 networks:
   default:
     name: internal_apps_network

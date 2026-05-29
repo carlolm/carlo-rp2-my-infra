@@ -1,0 +1,16 @@
+[Unit]
+Description=Cloudflare Tunnel (rp2-apps) for public ingress
+After=network-online.target gatekeeper-caddy.service
+Wants=network-online.target
+
+[Service]
+User=carlo
+Group=carlo
+WorkingDirectory=/home/carlo/carlo-rp2-my-infra
+EnvironmentFile=/home/carlo/carlo-rp2-my-infra/.env
+ExecStart=/home/carlo/bin/cloudflared tunnel --no-autoupdate run
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

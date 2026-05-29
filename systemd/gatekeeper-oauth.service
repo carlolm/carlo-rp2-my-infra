@@ -1,0 +1,13 @@
+[Unit]
+Description=OAuth2 Proxy Gatekeeper
+After=network.target
+
+[Service]
+User=carlo
+Group=carlo
+WorkingDirectory=/home/carlo/carlo-rp2-my-infra
+ExecStart=/home/carlo/bin/oauth2-proxy --config=/home/carlo/carlo-rp2-my-infra/oauth2-proxy.cfg
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

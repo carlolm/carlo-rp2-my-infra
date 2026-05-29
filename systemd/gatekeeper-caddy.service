@@ -1,0 +1,16 @@
+[Unit]
+Description=Caddy Reverse Proxy with Cloudflare SSL
+After=network.target gatekeeper-oauth.service
+
+[Service]
+User=carlo
+Group=carlo
+WorkingDirectory=/home/carlo/carlo-rp2-my-infra
+# CLOUDFLARE_API_TOKEN comes from .env (keep the secret out of the unit file).
+EnvironmentFile=/home/carlo/carlo-rp2-my-infra/.env
+ExecStart=/home/carlo/bin/caddy run --config /home/carlo/carlo-rp2-my-infra/Caddyfile --adapter caddyfile
+Restart=always
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target
